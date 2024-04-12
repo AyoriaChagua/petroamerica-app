@@ -1,0 +1,40 @@
+{
+  "expo": {
+    "scheme": "appclientes",
+    "name": "Consultas",
+    "slug": "petroamerica",
+    "version": "1.0.9",
+    "orientation": "portrait",
+    "icon": "./assets/3petroamerica.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splashPetroamerica.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
+    },
+    "updates": {
+      "fallbackToCacheTimeout": 0
+    },
+    "assetBundlePatterns": [
+      "**/*"
+    ],
+    "ios": {
+      "supportsTablet": true
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/4petroamerica.png",
+        "backgroundColor": "#FFFFFF"
+      },
+      "package": "com.petroamerica.AppClientes"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "0a96ffae-e73d-470c-8734-712004eda571"
+      }
+    }
+  }
+}
