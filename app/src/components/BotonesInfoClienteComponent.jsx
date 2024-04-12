@@ -21,7 +21,7 @@ export const BotonesInfoClienteComponent = ({cargandoInfo, titulo, cantidad, ico
                             <Text style={{textAlign:'center', fontSize: ResponsiveFont(12)}}>{titulo}</Text>
                         </View>
                         <View style={{alignItems:'center'}}>
-                            <Text style={{textAlign:'center', fontWeight:'bold', fontSize: ResponsiveFont(16)}}>{cantidad}</Text>
+                            <Text style={{textAlign:'center', fontWeight:'bold', fontSize: ResponsiveFont(13)}}>{cantidad}</Text>
                             <Avatar.Icon size={ResponsiveFont(40)} icon={icono} style={{backgroundColor:'transparent'}} color={color}/>
                         </View>
                     </TouchableOpacity>

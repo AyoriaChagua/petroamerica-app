@@ -42,6 +42,7 @@ import { ModalInfoClienteComponent } from "../components/ModalInfoClienteCompone
 import { ModalComponent } from "../components/ModalComponent";
 import { BotonesInfoClienteComponent } from "../components/BotonesInfoClienteComponent";
 import ButtonPDF from "../components/pdf/ButtonPDF";
+import BotonDeudasTotal from "../components/BotonDeudasTotal";
 
 const altura = Dimensions.get("screen").height;
 
@@ -77,6 +78,8 @@ export const InfoClienteScreen = () => {
     cerrarModalDocMes,
     cambiarVistaVentasClientes,
     mostrarVentanaEmergenteCredito,
+    handleCheckboxChange,
+    isChecked
   } = useInfoCliente();
 
   const { ResponsiveFont } = helpers();
@@ -448,33 +451,13 @@ export const InfoClienteScreen = () => {
               marginHorizontal: 10,
             }}
           >
-            <TouchableOpacity
-              style={{
-                widht: 10,
-                padding: 5,
-                backgroundColor: "#f2f9ff",
-                borderRadius: 5,
-                backgroundColor: "#f2f9ff",
-                borderWidth: 1,
-                borderColor: "#e9e9e9",
-                borderRadius: 5,
-              }}
-            >
-              <View
-                style={{
-                  flexDirection: "row",
-                }}
-              >
-                <Text style={{ fontSize: ResponsiveFont(12) }}>
-                  DEUDA TOTAL:{" "}
-                </Text>
-                <Text
-                  style={{ fontWeight: "bold", fontSize: ResponsiveFont(12) }}
-                >
-                  {valoresDeudas.deudaTotal}
-                </Text>
-              </View>
-            </TouchableOpacity>
+           
+            <BotonDeudasTotal
+              cargandoInfo={estadoDeudas.dedudaSinVender && estadoDeudas.dedudaVencida}
+              titulo={"DEUDA TOTAL"}
+              deudaTotal={valoresDeudas.deudaTotal}
+              accionBoton={mostrarVentanaEmergente}
+            />
           </View>
           <View
             style={{
@@ -482,7 +465,6 @@ export const InfoClienteScreen = () => {
               justifyContent: "center",
             }}
           >
-            <ButtonPDF />
           </View>
         </View>
         <ModalComponent
@@ -600,6 +582,8 @@ export const InfoClienteScreen = () => {
           saldoTotalDoc={saldoTotalDoc}
           cerrarModal={cerrarVentanaEmergente}
           seleccionarDelFiltro={agregarPlantaAlFiltro}
+          isChecked={isChecked}
+          onCheckboxChange={handleCheckboxChange}
         />
       </Provider>
     </SafeAreaView>

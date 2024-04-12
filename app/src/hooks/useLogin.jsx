@@ -53,6 +53,7 @@ export const useLogin = () => {
       Alert.alert('Mensaje', 'Usuario no registrado.')
       return
     }
+    console.log(resLogin)
     await setTime(moment().format())
     await setObjectValue({token: resLogin.token, id_usuario: camposLogin.id_usuario, tipoUsuario: resLogin.aprueba_dscto})
     ingresarContextAuth(resLogin.token, camposLogin.id_usuario, resLogin.aprueba_dscto)
