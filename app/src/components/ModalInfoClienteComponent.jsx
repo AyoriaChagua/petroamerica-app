@@ -5,8 +5,9 @@ import { HeaderModal } from './HeaderModal'
 import { helpers } from '../helpers/helpers'
 import { Picker } from '@react-native-picker/picker'
 import moment from 'moment'
+import ButtonPDF from './pdf/ButtonPDF'
 
-export const ModalInfoClienteComponent = ({ verModal, cerrarModal, documentos, listaPlantas, titulo, filtroSeleccionado, seleccionarDelFiltro, cargaInformacion, tipoVentaDocDeuda, saldoTotalDoc, botonEfeact = false, isChecked = false, onCheckboxChange = () => { } }) => {
+export const ModalInfoClienteComponent = ({ verModal, cerrarModal, documentos, listaPlantas, titulo, filtroSeleccionado, seleccionarDelFiltro, cargaInformacion, tipoVentaDocDeuda, saldoTotalDoc, botonEfeact = false, isChecked = false, onCheckboxChange = () => { }, cliente={ruc: "", descripcion: ""} }) => {
 
   const { ResponsiveFont } = helpers()
   const renderItem = ({ item, index }) => {
@@ -30,7 +31,7 @@ export const ModalInfoClienteComponent = ({ verModal, cerrarModal, documentos, l
           <Text numberOfLines={1} style={{ textAlign: 'center', fontSize: ResponsiveFont(11.5) }}>{(item.planta || '').substring(0, 5)}</Text>
         </View>
         <View style={{ flex: 1 }}>
-          <Text numberOfLines={1} style={{ textAlign: 'center', fontSize: ResponsiveFont(11.5) }}>{item.documento}</Text>
+          <Text numberOfLines={1} style={{ textAlign: 'center', fontSize: ResponsiveFont(11.5) }}>{item.document ||  item.documento}</Text>
         </View>
         <View style={{ flex: 1 }}>
           <Text numberOfLines={1} style={{ textAlign: 'center', fontSize: ResponsiveFont(11.5) }}>{item.fecha}</Text>
@@ -173,20 +174,24 @@ export const ModalInfoClienteComponent = ({ verModal, cerrarModal, documentos, l
                   keyExtractor={(value, index) => index}
                   renderItem={(tipoVentaDocDeuda === "1") ? renderItem : renderItemCredito}
                 />
-                <View style={{ marginRight: 10, flexDirection: 'row', justifyContent: 'flex-end' }}>
+                <View style={{ marginRight: 10, marginTop: 10,flexDirection: 'row', justifyContent: 'flex-end', alignItems: "center" }}>
                   <View style={{ flex: 1 }} />
-                  <View style={{ flex: 2 }} />
-                  <View style={{ flex: 1 }} />
+                  <View style={{ flex: 2 }} >
+                    <ButtonPDF  dataDeudas={filtroSeleccionado === "" ?
+                    (isChecked ?
+                      documentos.filter(value => parseFloat(value['cantidad']) >= 1.00)
+                      : documentos)
+                    : documentos.filter(value => value.planta === filtroSeleccionado)} dataCliente={cliente}/>
+                  </View>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontSize: ResponsiveFont(11.5), textAlign: 'right' }}>Total: </Text>
                   </View>
-                  <View style={{ flex: 1 }}>
+                  <View style={{ flex: 2 }}>
                     <Text style={{ fontWeight: 'bold', fontSize: ResponsiveFont(11.5), textAlign: 'center' }}>{saldoTotalDoc}</Text>
                   </View>
                 </View>
               </>
           }
-
         </View>
       </Modal>
     </Portal>

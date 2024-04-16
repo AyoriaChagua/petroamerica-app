@@ -584,6 +584,10 @@ export const InfoClienteScreen = () => {
           seleccionarDelFiltro={agregarPlantaAlFiltro}
           isChecked={isChecked}
           onCheckboxChange={handleCheckboxChange}
+          cliente={{
+            descripcion: cliente.descripcion,
+            ruc: cliente.nro_di
+          }}
         />
       </Provider>
     </SafeAreaView>
