@@ -15,7 +15,7 @@ export const ModalInfoClienteComponent = ({ verModal, cerrarModal, documentos, l
     const fechaVencimiento = moment(item.fecha_vencimiento, 'DD-MM-YY');
     let colorFondo;
     if (fechaHoy.isBefore(fechaVencimiento)) {
-      colorFondo = index % 2 ? '#95E776' : '#E0F7D8';
+      colorFondo = index % 2 ? '#9ff084' : '#d1f6c5';
     } else if (fechaHoy.isSame(fechaVencimiento, 'day')) {
       colorFondo = index % 2 ? '#F3F77D' : '#FCFDD6';
     } else {
@@ -177,11 +177,11 @@ export const ModalInfoClienteComponent = ({ verModal, cerrarModal, documentos, l
                 <View style={{ marginRight: 10, marginTop: 10,flexDirection: 'row', justifyContent: 'flex-end', alignItems: "center" }}>
                   <View style={{ flex: 1 }} />
                   <View style={{ flex: 2 }} >
-                    <ButtonPDF  dataDeudas={filtroSeleccionado === "" ?
+                      { titulo === "DEUDA TOTAL" &&  <ButtonPDF  dataDeudas={filtroSeleccionado === "" ?
                     (isChecked ?
                       documentos.filter(value => parseFloat(value['cantidad']) >= 1.00)
                       : documentos)
-                    : documentos.filter(value => value.planta === filtroSeleccionado)} dataCliente={cliente}/>
+                    : documentos.filter(value => value.planta === filtroSeleccionado)} dataCliente={cliente}/>}
                   </View>
                   <View style={{ flex: 1 }}>
                     <Text style={{ fontSize: ResponsiveFont(11.5), textAlign: 'right' }}>Total: </Text>

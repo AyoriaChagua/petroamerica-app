@@ -447,9 +447,7 @@ export const InfoClienteScreen = () => {
           }}
         >
           <View
-            style={{
-              marginHorizontal: 10,
-            }}
+           
           >
            
             <BotonDeudasTotal

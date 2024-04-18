@@ -30,7 +30,7 @@ export default function BotonDeudasTotal({ cargandoInfo, titulo, deudaTotal, acc
 const styles = StyleSheet.create({
     container: {
         widht: 10,
-        padding: 5,
+        padding: 10,
         backgroundColor: "#f2f9ff",
         borderRadius: 5,
         backgroundColor: "#f2f9ff",

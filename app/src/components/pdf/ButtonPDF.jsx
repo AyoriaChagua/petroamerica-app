@@ -3,8 +3,10 @@ import { ActivityIndicator, Colors } from "react-native-paper"
 import React, { useEffect, useState } from "react";
 import { helpers } from "../../helpers/helpers";
 import { printToFileAsync } from "expo-print";
+import * as FileSystem  from "expo-file-system";
 import { shareAsync } from "expo-sharing";
 import { footerPDF, headerPDF, stylesPDF, tablaCuentasPDF, tablasInformativasPDF } from "./strings-body";
+import { formatearNumeros } from "../../utils/numbers";
 
 
 export default function ButtonPDF({ dataDeudas, dataCliente }) {
@@ -13,23 +15,37 @@ export default function ButtonPDF({ dataDeudas, dataCliente }) {
   const [loading, setLoading] = useState(false);
   const [html, setHtml] = useState("");
   useEffect(() => {
+    let montoCorriente = 0;
+    let montoVencido1a2 = 0; 
+    let montoVencido = 0;
+    let nroDocVencido = 0;
+
+   
+
     let stringHTMLTablaDeuda = "";
     let backgroundFila = "";
     dataDeudas.map((item, index) => {
       switch (item.status) {
         case "VENCIDO":
+          montoVencido += parseFloat(item.saldo.replace(",", ""));
+          montoVencido1a2 += parseInt(item.days_difference) <= 2 ?  parseFloat(item.saldo.replace(",", "")) : 0;
+          nroDocVencido += 1;
           backgroundFila = index % 2 ? '#FC8585' : '#FCA9A9'
           break;
         case "VENCE HOY":
+          montoCorriente += parseFloat(item.saldo);
           backgroundFila = index % 2 ? '#F3F77D' : '#FCFDD6';
           break;
         case "POR VENCER":
-          backgroundFila = index % 2 ? '#95E776' : '#E0F7D8'
+          montoCorriente += parseFloat(item.saldo.replace(",", ""));
+         
+          backgroundFila = index % 2 ? '#abf391' : '#d6f8cb'
           break;
         default:
           backgroundFila = "#fff"
           break;
       }
+      
       stringHTMLTablaDeuda += `
       <tr style="background-color: ${backgroundFila};">
         <td>${item.fecha}</td>
@@ -40,10 +56,14 @@ export default function ButtonPDF({ dataDeudas, dataCliente }) {
         <td>${item.total_fac}</td>
         <td>${item.total_per}</td>
         <td>${item.total}</td>
+        <td>${item.saldo}</td>
         <td>${item.status}</td>
         <td>${item.days_difference ?? ""}</td>
     </tr>`;
-    })
+    });
+    
+    
+    
     const newHTML = `<html>
     <head>
     <style>
@@ -63,13 +83,66 @@ export default function ButtonPDF({ dataDeudas, dataCliente }) {
                 <p>Reciban nuestros cordiales saludos. De acuerdo a la información recogida de nuestro sistema, le enviamos
                     el estado de cuenta de su representada al día de hoy:</p>
                 <div class="contenedor">
-                    ${tablasInformativasPDF}
+                <div class="tabla">
+                  <table class="table-1">
+                      <thead>
+                          <tr>
+                              <th colspan="3">LINEA - SOLES</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td>ASIGNADO</td>
+                              <td>150,000.00</td>
+                          </tr>
+                          <tr>
+                              <td>UTILIZADO</td>
+                              <td>82,223.83</td>
+                          </tr>
+                          <tr>
+                              <td>DISPONIBLE</td>
+                              <td>67,776.17</td>
+                          </tr>
+                      </tbody>
+                  </table>
+                </div>
+                <div class="tabla">
+                  <table class="table-1">
+                      <thead>
+                          <tr>
+                              <th colspan="3" style="text-align: center;">VENCIMIENTOS</th>
+                          </tr>
+                          <tr>
+                              <th colspan="1">PERIODO</th>
+                              <th colspan="2">MONTO</th>
+                          </tr>
+                      </thead>
+                      <tbody>
+                          <tr>
+                              <td colspan="2">CORRIENTE</td>
+                              <td>${formatearNumeros(montoCorriente)}</td>
+                          </tr>
+                          <tr>
+                              <td colspan="2">VENC 1-2 DÍAS</td>
+                              <td>${formatearNumeros(montoVencido1a2)}</td>
+                          </tr>
+                          <tr>
+                              <td colspan="2">TOTAL VENCIDO</td>
+                              <td>${formatearNumeros(montoVencido)}</td>
+                          </tr>
+                          <tr>
+                              <td colspan="2">NRO. DOC. VENC.</td>
+                              <td>${nroDocVencido}</td>
+                          </tr>
+                      </tbody>
+                  </table>
+                </div>
                 </div>
                 <div class="tabla">
                     <table class="table-1 tabla-listado-fac">
                         <thead>
                             <tr>
-                                <th colspan="10" style="text-align: center;">LISTADO DE FACTURAS POR PAGAR</th>
+                                <th colspan="11" style="text-align: center;">LISTADO DE FACTURAS POR PAGAR</th>
                             </tr>
                             <tr>
                                 <th>FECHA</th>
@@ -77,9 +150,10 @@ export default function ButtonPDF({ dataDeudas, dataCliente }) {
                                 <th>FEC. VCMT.</th>
                                 <th>COND. PAGO</th>
                                 <th>DIAS</th>
-                                <th>TOTAL FAC</th>
-                                <th>TOTAL PER</th>
-                                <th>TOTAL FAC + PER</th>
+                                <th>TOT. FAC</th>
+                                <th>TOT. PER</th>
+                                <th>TOTAL</th>
+                                <th>SALDO</th>
                                 <th>ESTADO</th>
                                 <th>DIAS</th>
                             </tr>
@@ -110,7 +184,7 @@ export default function ButtonPDF({ dataDeudas, dataCliente }) {
     setHtml(newHTML);
   }, []);
 
-  const generatePDF = async () => {
+  const generateAndSavePDF = async () => {
     try {
       setLoading(true);
       const file = await printToFileAsync({
@@ -123,6 +197,43 @@ export default function ButtonPDF({ dataDeudas, dataCliente }) {
       console.error(error);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const generatePDF = async () => {
+    try {
+      setLoading(true);
+      
+      const pdfContent = html;
+  
+      const pdfUri = FileSystem.documentDirectory + 'archivo.pdf';
+      await FileSystem.writeAsStringAsync(pdfUri, pdfContent, { encoding: FileSystem.EncodingType.UTF8 });
+  
+      await saveFile(pdfUri, 'archivo.pdf', 'application/pdf');
+    } catch (error) {
+      console.error('Error al crear el archivo:', error);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  const saveFile = async (uri, filename, mimetype) => {
+    if (Platform.OS === 'android') {
+      const permissions = await FileSystem.StorageAccessFramework.requestDirectoryPermissionsAsync();
+      console.log(permissions)
+      if (permissions.granted) {
+        await FileSystem.StorageAccessFramework.createFileAsync(permissions.directoryUri, filename, mimetype)
+          .then(async (createdUri) => {
+            await FileSystem.copyAsync({ from: uri, to: createdUri });
+          })
+          .catch((error) => {
+            console.error('Error al crear el archivo:', error);
+          });
+      } else {
+        console.log('Permiso denegado para acceder a la carpeta.');
+      }
+    } else {
+      console.log('La funcionalidad de guardar archivos no está implementada para esta plataforma.');
     }
   };
 
@@ -143,11 +254,17 @@ export default function ButtonPDF({ dataDeudas, dataCliente }) {
         >
           <View
             style={{
+              display: "flex",
               flexDirection: "row",
               alignItems: "center",
               justifyContent: "center",
+              
             }}
           >
+             <Image
+              source={require("../../img/pdf-icon.png")}
+              style={{ width: 22, height: 22, marginRight: 5 }}
+            />
             <Text
               style={{
                 fontWeight: "bold",
@@ -162,7 +279,4 @@ export default function ButtonPDF({ dataDeudas, dataCliente }) {
       </View>}
     </>
   )
-
-
-
 }
